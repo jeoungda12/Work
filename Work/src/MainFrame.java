@@ -11,6 +11,14 @@ import javax.swing.table.DefaultTableModel;
 
 public class MainFrame implements ActionListener, ClipboardOwner {
 	JTable jt = new JTable();
+	JList<String> list1 = new JList<>();
+    JScrollPane sp = new JScrollPane();
+    JScrollPane spl = new JScrollPane();
+    JLabel L1 = new JLabel("File Manager");
+    JPanel P1 = new JPanel(new BorderLayout());
+    JPanel P2 = new JPanel(new BorderLayout());
+    Vector<String> copyFile;
+    String[] directoryName_List;
     String[] asd = {"한글", "English"};
     File name;
     File getBack;
@@ -25,14 +33,6 @@ public class MainFrame implements ActionListener, ClipboardOwner {
     String[] Kr = {"이름", "크기", "수정한 날짜"};
     String[] En = {"Name", "Size", "Modified"};
     JComboBox comboBox1 = new JComboBox(asd);
-    JList<String> list1 = new JList<>();
-    JScrollPane sp = new JScrollPane();
-    JScrollPane spl = new JScrollPane();
-    JLabel L1 = new JLabel("File Manager");
-    JPanel P1 = new JPanel(new BorderLayout());
-    JPanel P2 = new JPanel(new BorderLayout());
-    Vector<String> copyFile;
-    String[] directoryName_List;
 
     public MainFrame() {
     	
@@ -76,50 +76,7 @@ public class MainFrame implements ActionListener, ClipboardOwner {
                 }
             }
         });
-        spl.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    JPopupMenu PopMenu = new JPopupMenu();
-                    if (comboBox1.getSelectedItem() == "한글") {
-                        for (int i = 0; i < 4; i++) {
-                            if (i == 1) PopMenu.addSeparator();
-                            if (i == 1 || i == 3) continue;
-                            PopMenu.add(Korea[i]);
-                        }
-                    } else {
-                        for (int i = 0; i < 4; i++) {
-                            if (i == 1) PopMenu.addSeparator();
-                            if (i == 1 || i == 3) continue;
-                            PopMenu.add(English[i]);
-                        }
-                    }
-                    PopMenu.show(jt, e.getX(), e.getY());
-                    PopMenu.setVisible(true);
-                }
-            }
-        });
-
-        jt.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (SwingUtilities.isRightMouseButton(e)) {
-                    JPopupMenu PopMenu = new JPopupMenu();
-                    if (comboBox1.getSelectedItem() == "한글") {
-                        for (int i = 0; i < 4; i++) {
-                            if (i == 1 || i == 3) PopMenu.addSeparator();
-                            PopMenu.add(Korea[i]);
-                        }
-                    } else {
-                        for (int i = 0; i < 4; i++) {
-                            if (i == 1 || i == 3) PopMenu.addSeparator();
-                            PopMenu.add(English[i]);
-                        }
-                    }
-                    PopMenu.show(jt, e.getX(), e.getY());
-                    PopMenu.setVisible(true);
-                }
-            }
-        });
+        
         for (int i = 0; i < 4; i++) {
             English[i].addActionListener(this);
             Korea[i].addActionListener(this);
@@ -161,77 +118,7 @@ public class MainFrame implements ActionListener, ClipboardOwner {
         }
     }
 
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == Korea[3] || e.getSource() == English[3]) {
-            int[] columns = jt.getSelectedRows();
-            for (int column : columns) {
-                System.out.println(column);
-                System.out.println(path + File.separator + jt.getValueAt(column, 0));
-            }
-            for (int column : columns) {
-               File delete = new File(path + File.separator + jt.getValueAt(column, 0));
-               delete.delete();
-           }
-           for (int i = 0; i < columns.length; i++)
-                model.removeRow(columns[i] - i);
-            model.fireTableDataChanged();
-            jt.updateUI();
-        }
-
-        if (e.getSource() ==Korea[0] || e.getSource() == English[0]) {
-            File open_Directory = new File(path);
-            try {
-                Desktop.getDesktop().open(open_Directory);
-            } catch (IOException ignored) {
-
-            }
-        }
-
-        if (e.getSource() == Korea[1] || e.getSource() == English[1]) {
-            Korea[2].setEnabled(true);
-            English[2].setEnabled(true);
-            copy = jt.getSelectedRows();
-            copyFile = new Vector<>(jt.getRowCount());
-            for (int i = 0; i < copy.length; i++) {
-                copyFile.add(i, (path + "\\" + jt.getValueAt(copy[i], 0)));
-            }
-        }
-
-        if (e.getSource() == Korea[2] || e.getSource() ==English[2]) {
-            String tmp = path;
-            int count = 0;
-            for (int i = 0; i < copy.length; i++) {
-                String command = "cmd /c copy \"" + copyFile.get(i) + "\"" + " \"" + tmp + "\" /y";
-                try {
-                    Process child = Runtime.getRuntime().exec(command);
-                    InputStreamReader in = new InputStreamReader(child.getInputStream(), "MS949");
-                    int c;
-                    StringBuilder result;
-                    result = new StringBuilder();
-                    while ((c = in.read()) != -1) {
-                        result.append((char) c);
-                    }
-                    if (result.toString().contains("0개 파일이 복사되었습니다.")) {
-                        if (comboBox1.getSelectedItem() == "한글")
-                            JOptionPane.showMessageDialog(null, "액세스 권한이 없습니다.", "에러", JOptionPane.ERROR_MESSAGE);
-                        else
-                            JOptionPane.showMessageDialog(null, "You don't have access", "Error", JOptionPane.ERROR_MESSAGE);
-                        in.close();
-                        break;
-                    }
-                    in.close();
-                    count++;
-                } catch (Exception ee) {
-                    ee.printStackTrace();
-                }
-            }
-            getJList();
-            if (count == copy.length) {
-                homeTextField.setText(path);
-                getJList();
-            }
-        }
-    }
+   
 
     private void getJList() {
 
@@ -310,4 +197,10 @@ public class MainFrame implements ActionListener, ClipboardOwner {
     public static void main(String[] args) {
         new MainFrame();
     }
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
