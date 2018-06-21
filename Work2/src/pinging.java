@@ -1,4 +1,10 @@
+import java.awt.List;
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class pinging extends Thread {
 	
@@ -19,6 +25,24 @@ public class pinging extends Thread {
 			msg[0] = ip;
 			br = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line = null;
+			
+			ExecutorService es = Executors.newFixedThreadPool(20);
+			int timeout = 20;
+			List<Future<ScanResult>> futures = new ArrayList<>();
+			int openPorts = 0;
+			String openPortNumber = "";
+			for(int port = 1; port <= 1024; port++) {
+				try {
+					Socket socket = new Socket();
+					socket.connect(new InetSocketAddress(ip,port), timeout);
+					socket.close();
+					if(openPortNumber=="")
+						openPortNumber+=port;
+					else
+						openPortNumber+=", "+port;
+			} catch(Exception ex) {
+			}
+				
 			while ((line = br.readLine()) != null) {
 				if (line.indexOf("[") >= 0)
 				{
@@ -29,7 +53,7 @@ public class pinging extends Thread {
 					msg[2] = line.substring(line.indexOf("TTL=") + 4, line.indexOf("TTL=") + 7);
 					break;
 				}
-			} 
+			} }
 		} catch (Exception e) {
 			// TODO: handle exception
 		} finally {
@@ -71,3 +95,29 @@ public class pinging extends Thread {
 	}
 
 }
+public static class ScanResult {
+	private int port;
+	
+	private boolean isOpen;
+	
+	public ScanResult(int port, boolean isOpen) {
+		super();
+		this.port = port;
+		this.isOpen = isOpen;
+	}
+	public int getPort() {
+		return port;
+	}
+	public void setPort(int port) {
+		this.port = port;
+		
+	}
+	public boolean isOpen() {
+		return isOpen;
+	}
+public void setOpen(boolean isOpen) {
+	this.isOpen = isOpen;
+}
+}
+
+

@@ -18,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+
+import PortScanner.ScanResult;
+
 import java.awt.Choice;
 import java.awt.Color;
 
@@ -271,16 +274,18 @@ public class Work extends JFrame{
 					} else {
 						stats[i][2] = "[n/s]";
 					}
-					if(msg[2] != null) {
+					if(msg[3] != null) {
 						stats[i][3] = msg[3];
 					} else {
 						stats[i][3] = "[n/s]";
 					}
+					
 					//msg[1] != null || msg[2] != null || msg[3] != null
 					//portscan.
 					//scan value == null -> stats[i][4] = [n/s]
 					//scan value != null -> assgin valuet stats[i][4]
 					jTable.repaint();
+					
 				}
 			}
 		});
@@ -295,20 +300,6 @@ public class Work extends JFrame{
 			// TODO Auto-generated method stub
 			Work op = new Work();
 
-		}
-		public static Future<ScanResult> portlsOpen(final ExecutorService es, final String ip, final int port,final int timeout){
-			return es.submit(new Callable<ScanResult>() {
-				public ScanResult call() {
-					try {
-						Socket socket = new Socket();
-						socket.connect(new InetSocketAddress(ip,port), timeout);
-						socket.close();
-						return new ScanResult(port, true);
-					} catch (Exception ex) {
-						return new ScanResult(port,false);
-					}
-				}
-			});
 		}
 
 	}
