@@ -1,4 +1,3 @@
-
 public class ScanResult {
 	private int port;
 	private boolean isOpen;
@@ -20,5 +19,4 @@ public class ScanResult {
 	public void setOpen(boolean isOpen) {
 		this.isOpen = isOpen;
 	}
-
 }
