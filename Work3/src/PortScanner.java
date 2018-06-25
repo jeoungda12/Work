@@ -27,7 +27,7 @@ public class PortScanner {
 		for(final Future<ScanResult>f : futures) {
 			if(f.get().isOpen()) {
 				openPorts++;
-				openPortNumber += f.get().getPort()+","; //포트번호를 누적해서 가지고 있어야함, 번호를 획득할 수 있는 구간
+				openPortNumber += f.get().getPort()+","; 
 				
 			}
 		}
@@ -36,17 +36,17 @@ public class PortScanner {
 	}
 
 	public static Future<ScanResult>portlsOpen(final ExecutorService es, final String ip, final int port, final int timeout){
-		return es.submit(new Callable<ScanResult>() { //submit은 스레드의 start와 비슷하다
+		return es.submit(new Callable<ScanResult>() {
 			@Override
 			public ScanResult call() {
 				try {
-					Socket socket = new Socket(); //소켓 사용해서 서버와 연결
+					Socket socket = new Socket(); 
 					socket.connect(new InetSocketAddress(ip, port), timeout);
 					socket.close();
 					return new ScanResult(port, true);
 				}catch(Exception ex) {
 					return new ScanResult(port, false);
-				}//순차적으로 하면 시간이 너무 오래걸려서 스레드를 사용해야한다.
+				}
 			}
 		});
 	}
